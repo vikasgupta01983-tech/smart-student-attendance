@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attendance Sessions</title>
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+    <header>
+        <h1>Attendance Sessions</h1>
+        <p>Smart Student Attendance System</p>
+    </header>
+
+    <main class="container">
+        <section class="welcome-card">
+
+            <h2>Created Sessions</h2>
+
+            {% if sessions %}
+                <table border="1" cellpadding="10"
+                       style="margin: auto; border-collapse: collapse;">
+                    <tr>
+                        <th>ID</th>
+                        <th>Session Name</th>
+                        <th>Date</th>
+                    </tr>
+
+                    {% for session in sessions %}
+                    <tr>
+                        <td>{{ session['id'] }}</td>
+                        <td>{{ session['session_name'] }}</td>
+                        <td>{{ session['session_date'] }}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            {% else %}
+                <p>No attendance sessions created yet.</p>
+            {% endif %}
+
+            <br>
+            <a href="/create-session">Create Another Session</a>
+            <br><br>
+            <a href="/teacher">Back to Teacher Dashboard</a>
+
+        </section>
+    </main>
+
+</body>
+</html>

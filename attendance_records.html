@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Attendance Records | Smart Attendance System</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+
+    <style>
+        .table-wrapper {
+            width: 100%;
+            overflow-x: auto;
+            margin: 20px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        th, td {
+            padding: 12px;
+            border: 1px solid #ddd;
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        th {
+            background: #1e3a8a;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background: #f1f5f9;
+        }
+
+        .percentage {
+            font-weight: bold;
+            color: #15803d;
+        }
+
+        .section-title {
+            margin-top: 25px;
+            margin-bottom: 10px;
+        }
+
+        .back-button {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 12px 20px;
+            background: #2563eb;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+        }
+
+        .back-button:hover {
+            background: #1d4ed8;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <h1>Attendance Records</h1>
+        <p>Smart Student Attendance System</p>
+    </header>
+
+    <main class="container">
+
+        <section class="welcome-card">
+
+            <h2 class="section-title">📊 Student Attendance Summary</h2>
+
+            {% if attendance_summary %}
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Student Name</th>
+                            <th>Roll Number</th>
+                            <th>Class</th>
+                            <th>Sessions Attended</th>
+                            <th>Total Sessions</th>
+                            <th>Attendance Percentage</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for student in attendance_summary %}
+                        <tr>
+                            <td>{{ student['name'] }}</td>
+                            <td>{{ student['roll_number'] }}</td>
+                            <td>{{ student['class_name'] }}</td>
+                            <td>{{ student['attended_sessions'] }}</td>
+                            <td>{{ student['total_sessions'] }}</td>
+                            <td class="percentage">
+                                {{ student['percentage'] }}%
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            {% else %}
+
+            <p>No students registered yet.</p>
+
+            {% endif %}
+
+
+            <h2 class="section-title">📋 Detailed Attendance Records</h2>
+
+            {% if records %}
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Student Name</th>
+                            <th>Roll Number</th>
+                            <th>Class</th>
+                            <th>Session</th>
+                            <th>Date and Time</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for record in records %}
+                        <tr>
+                            <td>{{ record['name'] }}</td>
+                            <td>{{ record['roll_number'] }}</td>
+                            <td>{{ record['class_name'] }}</td>
+                            <td>{{ record['session_name'] }}</td>
+                            <td>{{ record['attendance_time'] }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            {% else %}
+
+            <p>No attendance records found yet.</p>
+
+            {% endif %}
+
+            <a href="{{ url_for('teacher') }}" class="back-button">
+                ← Back to Teacher Dashboard
+            </a>
+
+        </section>
+
+    </main>
+
+</body>
+
+</html>
