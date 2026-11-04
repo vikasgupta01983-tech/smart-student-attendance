@@ -462,7 +462,7 @@ def submit_attendance(session_id):
 
         connection.commit()
 
-        return "Attendance marked successfully!"
+        return render_template("attendance_success.html")
 
     except IntegrityError:
 
