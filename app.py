@@ -396,18 +396,14 @@ def submit_attendance(session_id):
     password = request.form.get("password", "")
 
     if not roll_number or not password:
-
-        return (
-            "Please enter your roll number and password.",
-            400
-        )
+        return "Please enter your roll number and password.", 400
 
     connection = get_database_connection()
 
     try:
-
         cursor = connection.cursor()
 
+        # Find the student using the entered roll number.
         cursor.execute("""
             SELECT *
             FROM students
@@ -417,13 +413,11 @@ def submit_attendance(session_id):
         student = cursor.fetchone()
 
         if student is None:
-
             return "Student not found. Please register first.", 404
 
         stored_hash = student["password_hash"]
 
         if not stored_hash:
-
             return (
                 "No password is set for this student. "
                 "Please contact your teacher.",
@@ -431,9 +425,9 @@ def submit_attendance(session_id):
             )
 
         if not check_password_hash(stored_hash, password):
-
             return "Incorrect roll number or password.", 401
 
+        # Check that the attendance session exists.
         cursor.execute("""
             SELECT id
             FROM sessions
@@ -443,8 +437,22 @@ def submit_attendance(session_id):
         session = cursor.fetchone()
 
         if session is None:
-
             return "Attendance session not found.", 404
+
+        # Check whether this student has already marked attendance.
+        cursor.execute("""
+            SELECT id
+            FROM attendance
+            WHERE student_id = %s AND session_id = %s
+        """, (student["id"], session_id))
+
+        existing_attendance = cursor.fetchone()
+
+        if existing_attendance:
+            return render_template(
+                "attendance_success.html",
+                message="Attendance has already been marked for this session."
+            )
 
         attendance_time = datetime.now(
             ZoneInfo("Asia/Kolkata")
@@ -462,19 +470,25 @@ def submit_attendance(session_id):
 
         connection.commit()
 
-        return render_template("attendance_success.html")
-
-    except IntegrityError:
-
-        connection.rollback()
-
-        return (
-            "Attendance has already been marked for this session.",
-            409
+        return render_template(
+            "attendance_success.html",
+            message="Attendance marked successfully!"
         )
 
-    finally:
+    except IntegrityError:
+        # The database UNIQUE constraint also protects against duplicate
+        # submissions that happen at almost the same time.
+        connection.rollback()
+        return render_template(
+            "attendance_success.html",
+            message="Attendance has already been marked for this session."
+        )
 
+    except Exception:
+        connection.rollback()
+        raise
+
+    finally:
         connection.close()
 
 
